@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abduh PC Store</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(244, 183, 178, 0.52), transparent 25rem),
+        radial-gradient(circle at 88% 16%, rgba(120, 188, 210, 0.44), transparent 24rem),
+        radial-gradient(circle at 52% 92%, rgba(166, 208, 184, 0.38), transparent 28rem),
+        linear-gradient(135deg, #dceaf1 0%, #eadcf0 38%, #f1ddd2 68%, #dcebe4 100%);
+      color: #183149;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    header {
+      background: rgba(88, 157, 142, 0.92); color: #183149; padding: 18px 30px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid rgba(127, 169, 184, 0.25);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 34px rgba(76, 112, 128, 0.08);
+    }
+    header h1 { font-size: 1.6rem; letter-spacing: 1px; color: #3d8095; font-weight: 800; }
+    
+    /* Barre de Recherche f'Navbar */
+    .search-box {
+      flex: 1; max-width: 350px; margin: 0 20px;
+    }
+    .search-box input {
+      width: 100%; padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(94, 142, 160, 0.28);
+      background: rgba(248, 244, 231, 0.92); color: #183149; font-size: 0.95rem; outline: none;
+    }
+    .search-box input:focus { border-color: #70acc0; box-shadow: 0 0 0 4px rgba(112, 172, 192, 0.12); }
+
+    .filter-bar {
+      max-width: 1060px;
+      margin: 24px auto -10px;
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-bar label {
+      color: #183149;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .filter-bar select {
+      min-width: 180px;
+      padding: 10px 38px 10px 12px;
+      border: 1px solid rgba(94, 142, 160, 0.28);
+      border-radius: 10px;
+      background: rgba(248, 244, 231, 0.92);
+      color: #183149;
+      font: 600 0.9rem 'Segoe UI', sans-serif;
+      cursor: pointer;
+    }
+    .sort-summary {
+      margin-left: auto;
+      color: #72899a;
+      font-size: 0.85rem;
+    }
+
+    .cart-btn {
+      background: linear-gradient(135deg, #86c5d3, #8dd1bd); color: #183149; border: none; padding: 10px 20px;
+      border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .cart-btn:hover { background: linear-gradient(135deg, #75b7c7, #78c4af); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .whatsapp-link {
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #25d366;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .whatsapp-link:hover {
+      background: #1fb85a;
+      transform: translateY(-2px);
+    }
+
+    /* Banner LeBron James */
+    .store-banner {
+      width: 100%; height: 300px; object-fit: cover; object-position: center;
+      border-bottom: 2px solid rgba(127, 169, 184, 0.25);
+    }
+    .store-intro { text-align: center; margin-bottom: 25px; }
+    .store-intro h2 { color: #3d8095; margin-bottom: 6px; }
+    .store-intro p { color: #72899a; }
+
+    /* Grille des produits */
+    .container { max-width: 1100px; margin: 35px auto; padding: 0 20px; }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: rgba(248, 244, 231, 0.92); border-radius: 18px; overflow: hidden;
+      box-shadow: 0 14px 34px rgba(72, 111, 128, 0.12); transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column; justify-content: space-between;
+      border: 1px solid rgba(143, 180, 194, 0.38);
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 20px 42px rgba(80, 127, 145, 0.18); }
+    .card.category-mouse { --card-accent: #6caed0; background: rgba(224, 240, 248, 0.94); }
+    .card.category-pad { --card-accent: #d69a7d; background: rgba(247, 232, 218, 0.94); }
+    .card.category-keyboard { --card-accent: #9c91c2; background: rgba(238, 234, 247, 0.94); }
+    .card.category-headset { --card-accent: #ca8fa3; background: rgba(248, 230, 237, 0.94); }
+    .card.category-webcam { --card-accent: #69b19f; background: rgba(224, 242, 235, 0.94); }
+    .card.category-monitor { --card-accent: #6d9bc2; background: rgba(226, 238, 248, 0.94); }
+    .card.category-ssd { --card-accent: #c49b54; background: rgba(246, 238, 215, 0.94); }
+    .card.category-ram { --card-accent: #ad7da8; background: rgba(243, 228, 241, 0.94); }
+    .card.category-gpu { --card-accent: #8378bd; background: rgba(235, 231, 247, 0.94); }
+    .card.category-pc { --card-accent: #6f9d9a; background: rgba(226, 240, 238, 0.94); }
+    .card .card-price { color: var(--card-accent); }
+    .card .add-btn { background: linear-gradient(135deg, var(--card-accent), color-mix(in srgb, var(--card-accent) 72%, #183149)); }
+    .card img { width: 100%; height: 210px; object-fit: cover; background: #edf5f3; }
+    .card-body { padding: 18px; }
+    .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #183149; }
+    .card-price { color: #d17c70; font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; }
+    .add-btn {
+      width: 100%; background: linear-gradient(135deg, #76b7cc, #72bea9); color: #ffffff; border: none;
+      padding: 11px; border-radius: 8px; cursor: pointer; font-weight: bold;
+      transition: background 0.2s;
+    }
+    .add-btn:hover { background: linear-gradient(135deg, #629fb4, #61af9b); }
+
+    /* Panier & Modal */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(70, 91, 104, 0.28); justify-content: center; align-items: center; z-index: 200;
+      backdrop-filter: blur(10px);
+    }
+    .modal-content {
+      background: rgba(239, 233, 220, 0.98); color: #183149; padding: 25px; border-radius: 20px; 
+      width: 90%; max-width: 480px; border: 1px solid rgba(143, 180, 194, 0.38);
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-content h2 { margin-bottom: 15px; color: #3d8095; }
+    .cart-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid rgba(143, 180, 194, 0.28);
+    }
+    .remove-btn {
+      background: #ef4444; color: rgba(189, 32, 32, 0.568); border: none; padding: 4px 8px;
+      border-radius: 5px; cursor: pointer; font-size: 0.8rem;
+    }
+    .total { font-size: 1.25rem; font-weight: bold; margin: 15px 0; text-align: right; color: #d17c70; }
+    
+    /* Formulaire Visa */
+    .payment-section {
+      margin-top: 15px; border-top: 1px solid rgba(143, 180, 194, 0.28); padding-top: 15px;
+    }
+    .payment-section h3 { font-size: 1rem; margin-bottom: 10px; color: #cbd5e1; }
+    .input-group { margin-bottom: 10px; }
+    .input-group label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #94a3b8; }
+    .input-group input {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(94, 142, 160, 0.28);
+      background: rgba(248, 244, 231, 0.92); color: #183149; font-size: 0.95rem;
+    }
+    .input-row { display: flex; gap: 10px; }
+    .order-section {
+      margin-top: 15px; border-top: 1px solid rgba(143, 180, 194, 0.28); padding-top: 15px;
+    }
+    .order-section h3 { font-size: 1rem; margin-bottom: 10px; color: #cbd5e1; }
+
+    .whatsapp-btn {
+      width: 100%; background: #700808; color: white; border: none;
+      padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;
+      margin-top: 15px; transition: background 0.2s;
+    }
+    .whatsapp-btn:hover { background: #130202; }
+    .close-btn {
+      width: 100%; background: #334155; color: #f8fafc; border: none;
+      padding: 10px; border-radius: 8px; margin-top: 8px; cursor: pointer;
+    }
+    .close-btn:hover { background: #475569; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Abduh PC Store</h1>
+    
+    <!-- Barre de Recherche -->
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Qelleb al9lawi onta hechman." oninput="filtrerProduits()">
+    </div>
+
+    <div class="header-actions">
+      <a class="whatsapp-link" href="https://wa.me/212770681113" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="cart-btn" onclick="toggleCart()">🛒 Panier (<span id="cart-count">0</span>)</button>
+    </div>
+  </header>
+
+  <img src="image.jpg" alt="معدات الكمبيوتر والألعاب" class="store-banner" onerror="this.src='https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=1200&auto=format&fit=crop'">
+
+  <div class="filter-bar">
+    <label for="category-filter">نوع المنتج:</label>
+    <select id="category-filter" onchange="trierProduits()">
+      <option value="all">Tous les produits</option>
+      <option value="mouse">Souris</option>
+      <option value="pad">Tapis de souris</option>
+      <option value="keyboard">Claviers</option>
+      <option value="headset">Casques et microphones</option>
+      <option value="webcam">Webcams</option>
+      <option value="monitor">Écrans</option>
+      <option value="ssd">Stockage SSD/HDD</option>
+      <option value="ram">Mémoire RAM</option>
+      <option value="gpu">Cartes graphiques</option>
+      <option value="pc">Composants PC</option>
+    </select>
+
+    <label for="sort-filter">Trier par:</label>
+    <select id="sort-filter" onchange="trierProduits()">
+      <option value="category">Type de produit</option>
+      <option value="name-asc">Nom A-Z</option>
+      <option value="name-desc">Nom Z-A</option>
+      <option value="price-asc">Prix croissant</option>
+      <option value="price-desc">Prix décroissant</option>
+    </select>
+    <span class="sort-summary" id="sort-summary"></span>
+  </div>
+
+  <div class="container">
+    <div class="store-intro">
+      <h2>Tout ce dont vous avez besoin pour votre PC</h2>
+      <p>Choisissez vos produits et commandez facilement via WhatsApp</p>
+    </div>
+    <div class="products-grid" id="products-list"></div>
+  </div>
+
+  <!-- Modal Panier & Visa -->
+  <div class="modal" id="cart-modal">
+    <div class="modal-content">
+      <h2>Votre Panier & Paiement</h2>
+      <div id="cart-items" style="max-height: 180px; overflow-y: auto;"></div>
+      <div class="total">Total: <span id="cart-total">0</span> DH</div>
+
+      <div class="order-section">
+        <h3>📦 معلومات التوصيل</h3>
+        <div class="input-group">
+          <label>الاسم الكامل</label>
+          <input type="text" id="customer-name" placeholder="مثال: Abdellah">
+        </div>
+        <div class="input-group">
+          <label>رقم الهاتف</label>
+          <input type="tel" id="customer-phone" placeholder="06 00 00 00 00">
+        </div>
+        <div class="input-group">
+          <label>العنوان / المدينة</label>
+          <input type="text" id="customer-address" placeholder="مثال: Casablanca">
+        </div>
+      </div>
+
+      <button class="whatsapp-btn" onclick="orderWhatsApp()">طلب عبر WhatsApp</button>
+      <button class="close-btn" onclick="toggleCart()">Fermer</button>
+    </div>
+  </div>
+
+  <script>
+    const images = {
+      mouse: "https://images.unsplash.com/photo-1527814050087-3793815479db?q=80&w=600&auto=format&fit=crop",
+      keyboard: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=600&auto=format&fit=crop",
+      headset: "https://images.unsplash.com/photo-1599669454699-248893623440?q=80&w=600&auto=format&fit=crop",
+      monitor: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=600&auto=format&fit=crop",
+      ssd: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?q=80&w=600&auto=format&fit=crop",
+      ram: "https://images.unsplash.com/photo-1562976540-1502c2145186?q=80&w=600&auto=format&fit=crop",
+      pad: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?q=80&w=600&auto=format&fit=crop",
+      webcam: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=600&auto=format&fit=crop",
+      pc: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=600&auto=format&fit=crop",
+      gpu: "https://images.unsplash.com/photo-1591488320449-011701bb6704?q=80&w=600&auto=format&fit=crop"
+    };
+
+    const categoryOrder = {
+      mouse: 1,
+      pad: 2,
+      keyboard: 3,
+      headset: 4,
+      webcam: 5,
+      monitor: 6,
+      ssd: 7,
+      ram: 8,
+      gpu: 9,
+      pc: 10
+    };
+
+    function getProductCategory(product) {
+      if (product.image === images.mouse) return "mouse";
+      if (product.image === images.pad) return "pad";
+      if (product.image === images.keyboard) return "keyboard";
+      if (product.image === images.headset) return "headset";
+      if (product.image === images.webcam) return "webcam";
+      if (product.image === images.monitor) return "monitor";
+      if (product.image === images.ssd) return "ssd";
+      if (product.image === images.ram) return "ram";
+      if (product.image === images.gpu) return "gpu";
+      return "pc";
+    }
+
+    const produits = [
+      { id: 1, nom: "Logitech G502 X Plus", prix: 1599, image: images.mouse },
+      { id: 2, nom: "Logitech MX Master 3S", prix: 799, image: images.mouse },
+      { id: 3, nom: "Logitech G PRO X Superlight", prix: 1899, image: images.mouse },
+      { id: 4, nom: "Logitech G305 Lightspeed", prix: 499, image: images.mouse },
+      { id: 5, nom: "Logitech M185", prix: 149, image: images.mouse },
+      { id: 6, nom: "Logitech M720 Triathlon", prix: 599, image: images.mouse },
+      { id: 7, nom: "Razer DeathAdder V3", prix: 899, image: images.mouse },
+      { id: 8, nom: "Razer Basilisk V3", prix: 799, image: images.mouse },
+      { id: 9, nom: "SteelSeries Rival 3", prix: 399, image: images.mouse },
+      { id: 13, nom: "Tapis de Souris Razer Gigantus", prix: 199, image: images.pad },
+      { id: 14, nom: "Tapis de Souris SteelSeries QcK", prix: 179, image: images.pad },
+      { id: 15, nom: "Tapis de Souris Logitech G740", prix: 349, image: images.pad },
+      { id: 16, nom: "Logitech MX Mechanical", prix: 1499, image: images.keyboard },
+      { id: 17, nom: "Logitech G915 TKL", prix: 2499, image: images.keyboard },
+      { id: 18, nom: "Logitech K380", prix: 349, image: images.keyboard },
+      { id: 19, nom: "Logitech G413", prix: 899, image: images.keyboard },
+      { id: 20, nom: "Razer Huntsman Mini", prix: 1199, image: images.keyboard },
+      { id: 21, nom: "Razer BlackWidow V4", prix: 1599, image: images.keyboard },
+      { id: 22, nom: "Corsair K70 RGB", prix: 1499, image: images.keyboard },
+      { id: 23, nom: "SteelSeries Apex 3", prix: 599, image: images.keyboard },
+      { id: 24, nom: "Redragon K552 Kumara", prix: 399, image: images.keyboard },
+      { id: 25, nom: "HyperX Alloy Origins", prix: 899, image: images.keyboard },
+      { id: 26, nom: "Casque Logitech G733", prix: 1299, image: images.headset },
+      { id: 27, nom: "Casque Logitech G435", prix: 699, image: images.headset },
+      { id: 28, nom: "Casque HyperX Cloud II", prix: 899, image: images.headset },
+      { id: 29, nom: "Casque Razer Kraken V3", prix: 799, image: images.headset },
+      { id: 30, nom: "Casque Corsair HS65", prix: 749, image: images.headset },
+      { id: 31, nom: "Casque SteelSeries Arctis 5", prix: 999, image: images.headset },
+      { id: 32, nom: "Micro USB Fifine A6T", prix: 599, image: images.headset },
+      { id: 33, nom: "Micro Logitech Blue Yeti", prix: 1499, image: images.headset },
+      { id: 39, nom: "Écran Dell 24 pouces 144Hz", prix: 1599, image: images.monitor },
+      { id: 40, nom: "Écran LG UltraGear 27 pouces", prix: 2699, image: images.monitor },
+      { id: 41, nom: "Écran Samsung Odyssey 27 pouces", prix: 3299, image: images.monitor },
+      { id: 42, nom: "Écran MSI 24 pouces 165Hz", prix: 1899, image: images.monitor },
+      { id: 43, nom: "Écran Asus TUF 27 pouces", prix: 2999, image: images.monitor },
+      { id: 44, nom: "Écran AOC 24G2 144Hz", prix: 1499, image: images.monitor },
+      { id: 45, nom: "Écran BenQ ZOWIE 24 pouces", prix: 1799, image: images.monitor },
+      { id: 46, nom: "Support écran double bras", prix: 499, image: images.monitor },
+      { id: 47, nom: "Support écran réglable", prix: 299, image: images.monitor },
+      { id: 48, nom: "Filtre anti-lumière écran", prix: 249, image: images.monitor },
+      { id: 49, nom: "SSD NVMe Kingston 1TB", prix: 799, image: images.ssd },
+      { id: 50, nom: "SSD NVMe Samsung 980 1TB", prix: 1099, image: images.ssd },
+      { id: 51, nom: "SSD NVMe WD Blue 500GB", prix: 499, image: images.ssd },
+      { id: 52, nom: "SSD Crucial P3 1TB", prix: 749, image: images.ssd },
+      { id: 53, nom: "SSD SATA 240GB", prix: 249, image: images.ssd },
+      { id: 54, nom: "SSD SATA 500GB", prix: 399, image: images.ssd },
+      { id: 55, nom: "SSD Externe 1TB", prix: 899, image: images.ssd },
+      { id: 56, nom: "Disque Dur 1TB", prix: 599, image: images.ssd },
+      { id: 57, nom: "Disque Dur 2TB", prix: 899, image: images.ssd },
+      { id: 58, nom: "Disque Dur Externe 2TB", prix: 999, image: images.ssd },
+      { id: 59, nom: "RAM Corsair Vengeance 16GB", prix: 499, image: images.ram },
+      { id: 60, nom: "RAM Kingston Fury 16GB", prix: 479, image: images.ram },
+      { id: 61, nom: "RAM G.Skill 32GB", prix: 899, image: images.ram },
+      { id: 62, nom: "RAM Crucial 8GB DDR4", prix: 249, image: images.ram },
+      { id: 63, nom: "RAM DDR5 16GB", prix: 649, image: images.ram },
+      { id: 64, nom: "Kit RAM RGB 32GB", prix: 999, image: images.ram },
+      { id: 65, nom: "Carte Mère Asus Prime", prix: 1299, image: images.pc },
+      { id: 66, nom: "Carte Mère MSI B550", prix: 1499, image: images.pc },
+      { id: 67, nom: "Carte Mère Gigabyte B660", prix: 1699, image: images.pc },
+      { id: 68, nom: "Carte Graphique RTX 4060", prix: 4999, image: images.gpu },
+      { id: 69, nom: "Carte Graphique RTX 4070", prix: 8999, image: images.gpu },
+      { id: 70, nom: "Carte Graphique RX 7600", prix: 3999, image: images.gpu },
+      { id: 71, nom: "Carte Graphique GTX 1660 Super", prix: 2799, image: images.gpu },
+      { id: 72, nom: "Carte Graphique RTX 3060", prix: 3499, image: images.gpu },
+      { id: 73, nom: "Processeur Intel i5-12400F", prix: 1799, image: images.pc },
+      { id: 74, nom: "Processeur Intel i7-12700F", prix: 3299, image: images.pc },
+      { id: 75, nom: "Processeur Ryzen 5 5600", prix: 1199, image: images.pc },
+      { id: 76, nom: "Processeur Ryzen 7 7700X", prix: 2899, image: images.pc },
+      { id: 77, nom: "Ventirad CPU RGB", prix: 399, image: images.pc },
+      { id: 78, nom: "Watercooling 240mm RGB", prix: 899, image: images.pc },
+      { id: 79, nom: "Watercooling 360mm RGB", prix: 1299, image: images.pc },
+      { id: 80, nom: "Boîtier Gaming RGB", prix: 699, image: images.pc },
+      { id: 81, nom: "Boîtier ATX Blanc", prix: 799, image: images.pc },
+      { id: 82, nom: "Boîtier Mini ITX", prix: 599, image: images.pc },
+      { id: 83, nom: "Alimentation 550W 80+", prix: 499, image: images.pc },
+      { id: 84, nom: "Alimentation 650W Modular", prix: 699, image: images.pc },
+      { id: 85, nom: "Alimentation 750W 80+", prix: 899, image: images.pc },
+      { id: 86, nom: "Ventilateur RGB 120mm", prix: 99, image: images.pc },
+      { id: 87, nom: "Pack 3 Ventilateurs RGB", prix: 299, image: images.pc },
+      { id: 88, nom: "Hub RGB 6 ports", prix: 149, image: images.pc },
+      { id: 89, nom: "Manette Xbox sans fil", prix: 799, image: images.pc },
+      { id: 90, nom: "Manette PS5 DualSense", prix: 899, image: images.pc },
+      { id: 91, nom: "Volant Gaming USB", prix: 1499, image: images.pc },
+      { id: 92, nom: "Adaptateur Bluetooth 5.0", prix: 149, image: images.pc },
+      { id: 93, nom: "USB Wi-Fi 6", prix: 249, image: images.pc },
+      { id: 94, nom: "Routeur Wi-Fi 6", prix: 899, image: images.pc },
+      { id: 95, nom: "Station d'accueil USB-C", prix: 699, image: images.pc },
+      { id: 96, nom: "Hub USB-C 7 en 1", prix: 349, image: images.pc },
+      { id: 97, nom: "Chargeur USB-C 65W", prix: 299, image: images.pc },
+      { id: 98, nom: "Batterie UPS 1000VA", prix: 999, image: images.pc },
+      { id: 99, nom: "Kit d'entretien PC", prix: 199, image: images.pc },
+      { id: 100, nom: "Lampe LED RGB Bureau", prix: 249, image: images.pc }
+    ];
+
+    produits.sort((a, b) =>
+      categoryOrder[getProductCategory(a)] - categoryOrder[getProductCategory(b)]
+      || a.nom.localeCompare(b.nom, "fr")
+    );
+
+    const numeroWhatsApp = "212770681113";
+    let panier = [];
+
+    function afficherProduits(list) {
+      const productsList = document.getElementById("products-list");
+      productsList.innerHTML = "";
+      if (list.length === 0) {
+        productsList.innerHTML = "<p style='color: #94a3b8; grid-column: 1/-1; text-align: center;'>Aucun produit trouvé.</p>";
+        return;
+      }
+      list.forEach(p => {
+        const category = p.image === images.mouse ? "mouse"
+          : p.image === images.pad ? "pad"
+          : p.image === images.keyboard ? "keyboard"
+          : p.image === images.headset ? "headset"
+          : p.image === images.webcam ? "webcam"
+          : p.image === images.monitor ? "monitor"
+          : p.image === images.ssd ? "ssd"
+          : p.image === images.ram ? "ram"
+          : p.image === images.gpu ? "gpu"
+          : "pc";
+        productsList.innerHTML += `
+          <div class="card category-${category}">
+            <img src="${p.image}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/300x200?text=Produit'">
+            <div class="card-body">
+              <div class="card-title">${p.nom}</div>
+              <div class="card-price">${p.prix} DH</div>
+              <button class="add-btn" onclick="ajouterAuPanier(${p.id})">Ajouter au panier</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Afficher tous les produits au début
+    afficherProduits(produits);
+
+    // Fonction dyal la recherche
+    function filtrerProduits() {
+      const query = document.getElementById("search-input").value.toLowerCase();
+      const filtered = produits.filter(p => p.nom.toLowerCase().includes(query));
+      afficherProduits(filtered);
+    }
+
+    function trierProduits() {
+      const category = document.getElementById("category-filter").value;
+      const sort = document.getElementById("sort-filter").value;
+      const query = document.getElementById("search-input").value.toLowerCase();
+
+      let filtered = produits.filter(p =>
+        (category === "all" || getProductCategory(p) === category)
+        && p.nom.toLowerCase().includes(query)
+      );
+
+      filtered = [...filtered];
+      if (sort === "name-asc") {
+        filtered.sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+      } else if (sort === "name-desc") {
+        filtered.sort((a, b) => b.nom.localeCompare(a.nom, "fr"));
+      } else if (sort === "price-asc") {
+        filtered.sort((a, b) => a.prix - b.prix);
+      } else if (sort === "price-desc") {
+        filtered.sort((a, b) => b.prix - a.prix);
+      } else {
+        filtered.sort((a, b) =>
+          categoryOrder[getProductCategory(a)] - categoryOrder[getProductCategory(b)]
+          || a.nom.localeCompare(b.nom, "fr")
+        );
+      }
+
+      document.getElementById("sort-summary").textContent = `${filtered.length} produit(s)`;
+      afficherProduits(filtered);
+    }
+
+    function ajouterAuPanier(id) {
+      const produit = produits.find(p => p.id === id);
+      panier.push(produit);
+      updateCart();
+    }
+
+    function supprimerDuPanier(index) {
+      panier.splice(index, 1);
+      updateCart();
+    }
+
+    function updateCart() {
+      document.getElementById("cart-count").innerText = panier.length;
+      const cartItems = document.getElementById("cart-items");
+      cartItems.innerHTML = "";
+      let total = 0;
+
+      panier.forEach((item, index) => {
+        total += item.prix;
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <span>${item.nom} - <b>${item.prix} DH</b></span>
+            <button class="remove-btn" onclick="supprimerDuPanier(${index})">X</button>
+          </div>
+        `;
+      });
+
+      if (panier.length === 0) cartItems.innerHTML = "<p style='color: #94a3b8;'>Le panier est vide.</p>";
+      document.getElementById("cart-total").innerText = total;
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById("cart-modal");
+      modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+    }
+
+    function orderWhatsApp() {
+      if (panier.length === 0) return alert("Panier khawi!");
+
+      const customerName = document.getElementById("customer-name").value.trim();
+      const customerPhone = document.getElementById("customer-phone").value.trim();
+      const customerAddress = document.getElementById("customer-address").value.trim();
+
+      if (!customerName || !customerPhone || !customerAddress) {
+        return alert("عافاك عمر الاسم ورقم الهاتف والعنوان.");
+      }
+
+      let message = `Salam,sidi abduuh bghit n-commandi had les produits:\n\n`;
+      let total = 0;
+      panier.forEach(item => {
+        message += `- ${item.nom} (${item.prix} DH)\n`;
+        total += item.prix;
+      });
+      message += `\nTotal: ${total} DH\n`;
+      message += `Nom: ${customerName}\nTéléphone: ${customerPhone}\nAdresse: ${customerAddress}`;
+      
+      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+  </script>
+
+</body>
+</html>
