@@ -190,6 +190,70 @@
       padding: 10px; border-radius: 8px; margin-top: 8px; cursor: pointer;
     }
     .close-btn:hover { background: #475569; }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 12px 14px;
+        gap: 10px;
+      }
+      header h1 {
+        width: 100%;
+        font-size: 1.25rem;
+      }
+      .search-box {
+        width: calc(100% - 20px);
+        max-width: none;
+        margin: 0 10px;
+        order: 3;
+      }
+      .search-box input {
+        min-height: 44px;
+        font-size: 16px;
+      }
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .whatsapp-link,
+      .cart-btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .filter-bar {
+        margin: 16px 14px 0;
+        padding: 10px 0;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .filter-bar label {
+        margin-top: 4px;
+      }
+      .filter-bar select {
+        width: 100%;
+        min-width: 0;
+        min-height: 44px;
+        font-size: 16px;
+      }
+      .sort-summary {
+        margin: 4px 0 0;
+      }
+      .store-banner {
+        height: 220px;
+      }
+      .container {
+        margin: 24px auto;
+        padding: 0 14px;
+      }
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .card img {
+        height: 230px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -534,7 +598,7 @@
         return alert("عافاك عمر الاسم ورقم الهاتف والعنوان.");
       }
 
-      let message = `Salam,sidi abduuh bghit n-commandi had les produits:\n\n`;
+      let message = `Bonjour,sidi abduuh lmokhtare je souhaite commander les produits suivants:\n\n`;
       let total = 0;
       panier.forEach(item => {
         message += `- ${item.nom} (${item.prix} DH)\n`;
@@ -542,8 +606,15 @@
       });
       message += `\nTotal: ${total} DH\n`;
       message += `Nom: ${customerName}\nTéléphone: ${customerPhone}\nAdresse: ${customerAddress}`;
-      
-      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+
+      const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(message)}`;
+      const whatsappLink = document.createElement("a");
+      whatsappLink.href = whatsappUrl;
+      whatsappLink.target = "_blank";
+      whatsappLink.rel = "noopener noreferrer";
+      document.body.appendChild(whatsappLink);
+      whatsappLink.click();
+      whatsappLink.remove();
     }
   </script>
 
