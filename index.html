@@ -80,22 +80,8 @@
       align-items: center;
       gap: 10px;
     }
-    .whatsapp-link {
-      padding: 10px 16px;
-      border-radius: 8px;
-      background: #25d366;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 800;
-      transition: transform 0.2s, background 0.2s;
-    }
-    .whatsapp-link:hover {
-      background: #1fb85a;
-      transform: translateY(-2px);
-    }
 
-    /* Banner LeBron James */
+    /* Banner */
     .store-banner {
       width: 100%; height: 300px; object-fit: cover; object-position: center;
       border-bottom: 2px solid rgba(127, 169, 184, 0.25);
@@ -157,39 +143,57 @@
       padding: 10px 0; border-bottom: 1px solid rgba(143, 180, 194, 0.28);
     }
     .remove-btn {
-      background: #ef4444; color: rgba(189, 32, 32, 0.568); border: none; padding: 4px 8px;
+      background: #ef4444; color: #ffffff; border: none; padding: 4px 8px;
       border-radius: 5px; cursor: pointer; font-size: 0.8rem;
     }
     .total { font-size: 1.25rem; font-weight: bold; margin: 15px 0; text-align: right; color: #d17c70; }
     
-    /* Formulaire Visa */
-    .payment-section {
-      margin-top: 15px; border-top: 1px solid rgba(143, 180, 194, 0.28); padding-top: 15px;
-    }
-    .payment-section h3 { font-size: 1rem; margin-bottom: 10px; color: #cbd5e1; }
     .input-group { margin-bottom: 10px; }
-    .input-group label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #94a3b8; }
+    .input-group label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #475569; font-weight: 600; }
     .input-group input {
       width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(94, 142, 160, 0.28);
       background: rgba(248, 244, 231, 0.92); color: #183149; font-size: 0.95rem;
     }
-    .input-row { display: flex; gap: 10px; }
     .order-section {
       margin-top: 15px; border-top: 1px solid rgba(143, 180, 194, 0.28); padding-top: 15px;
     }
-    .order-section h3 { font-size: 1rem; margin-bottom: 10px; color: #cbd5e1; }
+    .order-section h3 { font-size: 1rem; margin-bottom: 10px; color: #3d8095; }
 
     .whatsapp-btn {
-      width: 100%; background: #700808; color: white; border: none;
+      width: 100%; background: #25d366; color: white; border: none;
       padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;
       margin-top: 15px; transition: background 0.2s;
     }
-    .whatsapp-btn:hover { background: #130202; }
+    .whatsapp-btn:hover { background: #1fb85a; }
     .close-btn {
       width: 100%; background: #334155; color: #f8fafc; border: none;
       padding: 10px; border-radius: 8px; margin-top: 8px; cursor: pointer;
     }
     .close-btn:hover { background: #475569; }
+
+    /* Bouton WhatsApp Flottant lteht f ljennb */
+    .wa-float-container {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 9999;
+    }
+    .wa-float-btn {
+      width: 60px;
+      height: 60px;
+      background-color: #25d366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      text-decoration: none;
+    }
+    .wa-float-btn:hover {
+      background-color: #1fb85a;
+      transform: scale(1.08);
+    }
 
     @media (max-width: 700px) {
       header {
@@ -212,9 +216,8 @@
       }
       .header-actions {
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-end;
       }
-      .whatsapp-link,
       .cart-btn {
         min-height: 44px;
         display: inline-flex;
@@ -253,6 +256,10 @@
       .card img {
         height: 230px;
       }
+      .wa-float-container {
+        bottom: 16px;
+        right: 16px;
+      }
     }
   </style>
 </head>
@@ -263,11 +270,10 @@
     
     <!-- Barre de Recherche -->
     <div class="search-box">
-      <input type="text" id="search-input" oninput="filtrerProduits()">
+      <input type="text" id="search-input" placeholder="Rechercher un produit..." oninput="trierProduits()">
     </div>
 
     <div class="header-actions">
-      <a class="whatsapp-link" href="https://wa.me/212770681113" target="_blank" rel="noopener">WhatsApp</a>
       <button class="cart-btn" onclick="toggleCart()">🛒 Panier (<span id="cart-count">0</span>)</button>
     </div>
   </header>
@@ -309,10 +315,10 @@
     <div class="products-grid" id="products-list"></div>
   </div>
 
-  <!-- Modal Panier & Visa -->
+  <!-- Modal Panier -->
   <div class="modal" id="cart-modal">
     <div class="modal-content">
-      <h2>Votre Panier & Paiement</h2>
+      <h2>Votre Panier & Commande</h2>
       <div id="cart-items" style="max-height: 180px; overflow-y: auto;"></div>
       <div class="total">Total: <span id="cart-total">0</span> DH</div>
 
@@ -332,9 +338,28 @@
         </div>
       </div>
 
+      <div class="order-section">
+        <h3>📝 معاينة الرسالة</h3>
+        <textarea id="order-message-preview" readonly
+          style="width:100%;min-height:150px;resize:vertical;padding:10px;border-radius:8px;border:1px solid #334155;background:#f8fafc;color:#183149;"></textarea>
+      </div>
+
       <button class="whatsapp-btn" onclick="orderWhatsApp()">طلب عبر WhatsApp</button>
       <button class="close-btn" onclick="toggleCart()">Fermer</button>
     </div>
+  </div>
+
+  <!-- Bouton WhatsApp Flottant -->
+  <div class="wa-float-container">
+    <a href="https://wa.me/212770681113?text=salam%20sidi%20abduuh%20bghut%20hada" 
+       class="wa-float-btn" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       aria-label="WhatsApp">
+      <svg viewBox="0 0 32 32" width="32" height="32" fill="#ffffff">
+        <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.588 4.458 1.706 6.4L3.2 28.8l6.582-1.726A12.74 12.74 0 0 0 16.004 28.8c7.06 0 12.8-5.74 12.8-12.8s-5.74-12.8-12.8-12.8zm0 23.434a10.58 10.58 0 0 1-5.402-1.482l-.388-.23-4.016 1.054 1.072-3.914-.252-.402a10.585 10.585 0 0 1-1.628-5.66c0-5.854 4.762-10.616 10.614-10.616 5.854 0 10.616 4.762 10.616 10.616 0 5.852-4.762 10.614-10.616 10.614zm5.822-7.95c-.318-.16-1.886-.93-2.178-1.036-.292-.106-.504-.16-.716.16-.212.318-.822 1.036-1.008 1.248-.186.212-.372.238-.69.08-.318-.16-1.344-.496-2.56-1.58-.946-.844-1.584-1.886-1.77-2.204-.186-.318-.02-.49.14-.648.144-.142.318-.372.478-.558.16-.186.212-.318.318-.53.106-.212.054-.398-.026-.558-.08-.16-.716-1.726-.982-2.362-.258-.62-.52-.536-.716-.546-.186-.01-.398-.01-.61-.01-.212 0-.558.08-.85.398-.292.318-1.114 1.088-1.114 2.654 0 1.566 1.14 3.078 1.3 3.29.16.212 2.244 3.426 5.436 4.804.76.328 1.352.524 1.814.67.762.242 1.456.208 2.004.126.612-.092 1.886-.77 2.152-1.514.266-.744.266-1.382.186-1.514-.08-.132-.292-.212-.61-.372z"/>
+      </svg>
+    </a>
   </div>
 
   <script>
@@ -488,16 +513,7 @@
         return;
       }
       list.forEach(p => {
-        const category = p.image === images.mouse ? "mouse"
-          : p.image === images.pad ? "pad"
-          : p.image === images.keyboard ? "keyboard"
-          : p.image === images.headset ? "headset"
-          : p.image === images.webcam ? "webcam"
-          : p.image === images.monitor ? "monitor"
-          : p.image === images.ssd ? "ssd"
-          : p.image === images.ram ? "ram"
-          : p.image === images.gpu ? "gpu"
-          : "pc";
+        const category = getProductCategory(p);
         productsList.innerHTML += `
           <div class="card category-${category}">
             <img src="${p.image}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/300x200?text=Produit'">
@@ -511,15 +527,7 @@
       });
     }
 
-    // Afficher tous les produits au début
-    afficherProduits(produits);
-
-    // Fonction dyal la recherche
-    function filtrerProduits() {
-      const query = document.getElementById("search-input").value.toLowerCase();
-      const filtered = produits.filter(p => p.nom.toLowerCase().includes(query));
-      afficherProduits(filtered);
-    }
+    trierProduits();
 
     function trierProduits() {
       const category = document.getElementById("category-filter").value;
@@ -602,7 +610,7 @@
         return alert("Numéro de téléphone invalide.");
       }
 
-      let message = `Bonjour, je souhaite commander les produits suivants:\n\n`;
+      let message = "Bonjour, je souhaite commander les produits suivants:\n\n";
       let total = 0;
       const quantities = panier.reduce((items, item) => {
         if (!items[item.id]) items[item.id] = { nom: item.nom, prix: item.prix, quantity: 0 };
@@ -617,6 +625,8 @@
       });
       message += `\nTotal: ${total} DH\n\n`;
       message += `Nom: ${customerName}\nTéléphone: ${customerPhone}\nAdresse: ${customerAddress}\n`;
+
+      document.getElementById("order-message-preview").value = message;
 
       const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(message)}`;
       const whatsappLink = document.createElement("a");
