@@ -263,7 +263,7 @@
     
     <!-- Barre de Recherche -->
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Qelleb al9lawi onta hechman." oninput="filtrerProduits()">
+      <input type="text" id="search-input" oninput="filtrerProduits()">
     </div>
 
     <div class="header-actions">
@@ -320,15 +320,15 @@
         <h3>📦 معلومات التوصيل</h3>
         <div class="input-group">
           <label>الاسم الكامل</label>
-          <input type="text" id="customer-name" placeholder="مثال: Abdellah">
+          <input type="text" id="customer-name">
         </div>
         <div class="input-group">
           <label>رقم الهاتف</label>
-          <input type="tel" id="customer-phone" placeholder="06 00 00 00 00">
+          <input type="tel" id="customer-phone">
         </div>
         <div class="input-group">
           <label>العنوان / المدينة</label>
-          <input type="text" id="customer-address" placeholder="مثال: Casablanca">
+          <input type="text" id="customer-address">
         </div>
       </div>
 
@@ -588,24 +588,35 @@
     }
 
     function orderWhatsApp() {
-      if (panier.length === 0) return alert("Panier khawi!");
+      if (panier.length === 0) return alert("Votre panier est vide.");
 
       const customerName = document.getElementById("customer-name").value.trim();
       const customerPhone = document.getElementById("customer-phone").value.trim();
       const customerAddress = document.getElementById("customer-address").value.trim();
 
       if (!customerName || !customerPhone || !customerAddress) {
-        return alert("عافاك عمر الاسم ورقم الهاتف والعنوان.");
+        return alert("Veuillez remplir tous les champs.");
       }
 
-      let message = `Bonjour,sidi abduuh lmokhtare je souhaite commander les produits suivants:\n\n`;
+      if (customerPhone.replace(/\D/g, "").length < 8) {
+        return alert("Numéro de téléphone invalide.");
+      }
+
+      let message = `Bonjour, je souhaite commander les produits suivants:\n\n`;
       let total = 0;
-      panier.forEach(item => {
-        message += `- ${item.nom} (${item.prix} DH)\n`;
-        total += item.prix;
+      const quantities = panier.reduce((items, item) => {
+        if (!items[item.id]) items[item.id] = { nom: item.nom, prix: item.prix, quantity: 0 };
+        items[item.id].quantity += 1;
+        return items;
+      }, {});
+
+      Object.values(quantities).forEach(item => {
+        const subtotal = item.prix * item.quantity;
+        message += `- ${item.nom} x${item.quantity} (${subtotal} DH)\n`;
+        total += subtotal;
       });
-      message += `\nTotal: ${total} DH\n`;
-      message += `Nom: ${customerName}\nTéléphone: ${customerPhone}\nAdresse: ${customerAddress}`;
+      message += `\nTotal: ${total} DH\n\n`;
+      message += `Nom: ${customerName}\nTéléphone: ${customerPhone}\nAdresse: ${customerAddress}\n`;
 
       const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(message)}`;
       const whatsappLink = document.createElement("a");
